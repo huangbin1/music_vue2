@@ -33,6 +33,15 @@
 	webpack-dev-server
 ````
 在浏览器打开http://localhost:8080/或 http://localhost:8080/webpack-dev-server/ 可以浏览项目中的页面
+#### 怎么在局域网中打开网页？比如用手机查看页面
+加入参数 --host 192.168.1.121(ip为本机电脑ip)
+````sh
+	webpack-dev-server --host 192.168.1.121
+````
+#### 配置网页为手机网页？
+````html
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
+````
 ### 安装vue依赖
 ````sh
 	npm install vue -save
