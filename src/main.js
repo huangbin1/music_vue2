@@ -3,7 +3,11 @@ import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
 import App from './App.vue'
 
+
 Vue.use(MintUI)
+var VueResource = require('vue-resource')
+
+Vue.use(VueResource)
 
 var music_vue = new Vue({
   el: '#app',

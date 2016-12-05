@@ -3,12 +3,13 @@
   "description": "music based on vue2.0 and mint-ui",
   "author": "huangbin",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --inline --hot --host 192.168.9.20",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --inline --hot --host 192.168.10.101",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "mint-ui": "^2.0.4",
-    "vue": "^2.0.1"
+    "vue": "^2.0.1",
+    "vue-resource": "^1.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",
