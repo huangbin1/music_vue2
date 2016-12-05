@@ -1,4 +1,4 @@
-### 使用npm安装依赖模块可能会很慢，建议换成cnpm 
+### 使用npm安装依赖模块可能会很慢，建议换成cnpm
 ````sh
 	npm install -g cnpm --registry=http://registry.npm.taobao.org
 
