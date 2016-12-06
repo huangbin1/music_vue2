@@ -1,70 +1,51 @@
 <template>
   <div id="app">
+    <img src="./assets/logo.png">
     <h2>{{ msg }}</h2>
     <mt-search v-model="value"
                cancel-text="取消"
-               placeholder="搜索"
-               :result.sync="result">
-    </mt-search>
+               placeholder="搜索">
   </div>
 </template>
-
 <script>
 export default {
   name: 'app',
   data () {
     return {
       msg: '云音乐播放器',
-      value:''
-    }
-  },
-  methods: {
-    startHacking () {
-      this.$toast('It Works!')
+      value: ''
     }
   },
   watch: {
-   value: function (val, oldVal) {
+    value: function (val, oldVal) {
       console.log('new: %s, old: %s', val, oldVal)
-      //Lambda写法
-	    this.$http.post('http://music.163.com/api/search/pc',{
-          's': '周杰伦',
-          'offset': 0,
-          'limit': 20,
-          'type': 1
-        },
-        {
-          credentials: true
-        }
-      ).then((response) => {
+      this.$http.post('/api/search/get/web', {
+        'csrf_token': '',
+        's': '王菲',
+        'type': 1,
+        'offset': 0,
+        'limit': 5,
+        'total': true
+      },
+        // {
+        //   method: 'post',
+        //   headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded',
+        //     'Referer': 'http://music.163.com/search/',
+        //     'Access-Control-Allow-Origin': 'music.153.com'
+        //   }
+        // }
+        ).then((response) => {
           // 响应成功回调
           console.log(response)
         }, (response) => {
-            console.log("error response")
-            // 响应错误回调
-      })
-      // this.$http({
-      //   method:'POST',
-      //   url:'http://music.163.com/api/search/pc',
-      //   data:{
-      //     's': '周杰伦',
-      //     'offset': '0',
-      //     'limit': '20',
-      //     'type': ' '
-      //   },
-      //   headers: {
-      //     "X-Requested-With": "XMLHttpRequest",
-      //     'Access-Control-Allow-Origin': "http://music.163.com/"
-      //   },
-      //   emulateJSON: true
-      //   }).then((response) => {
-      //     console.log(response)
-      //   })
+          console.log('error response')
+          // 响应错误回调
+        })
     }
   }
 }
 </script>
-
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -72,24 +53,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 20px;
-}
-
-h1, h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+  margin-top: 60px;
 }
 </style>
