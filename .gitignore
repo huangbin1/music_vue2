@@ -2,4 +2,6 @@
 node_modules/
 dist/
 npm-debug.log
-.idea
+test/unit/coverage
+test/e2e/reports
+selenium-debug.log

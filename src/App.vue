@@ -8,6 +8,7 @@
   </div>
 </template>
 <script>
+// var qs = require('querystring')
 export default {
   name: 'app',
   data () {
@@ -19,22 +20,18 @@ export default {
   watch: {
     value: function (val, oldVal) {
       console.log('new: %s, old: %s', val, oldVal)
-      this.$http.post('/api/search/get/web', {
-        'csrf_token': '',
-        's': '王菲',
+      this.$http.post('/api/search/suggest/web', {
+        's': 'west',
         'type': 1,
         'offset': 0,
-        'limit': 5,
+        'limit': 10,
         'total': true
       },
-        // {
-        //   method: 'post',
-        //   headers: {
-        //     'Content-Type': 'application/x-www-form-urlencoded',
-        //     'Referer': 'http://music.163.com/search/',
-        //     'Access-Control-Allow-Origin': 'music.153.com'
-        //   }
-        // }
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
         ).then((response) => {
           // 响应成功回调
           console.log(response)
