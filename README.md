@@ -2,7 +2,7 @@
 -----
 ### 预览
 -----
-![](https://github.com/huangbin1/music_vue2/master/music_vue2.gif)
+![](https://github.com/huangbin1/music_vue2/blob/master/music_vue2.gif)
 -----
 ### 使用npm安装依赖模块可能会很慢，建议换成cnpm 
 ````sh
