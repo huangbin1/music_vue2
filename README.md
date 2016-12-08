@@ -1,3 +1,9 @@
+## 云音乐播放器
+-----
+### 预览
+-----
+![](https://github.com/huangbin1/music_vue2/master/music_vue2.gif)
+-----
 ### 使用npm安装依赖模块可能会很慢，建议换成cnpm 
 ````sh
 	npm install -g cnpm --registry=http://registry.npm.taobao.org
