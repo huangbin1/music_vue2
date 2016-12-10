@@ -3,9 +3,9 @@
     <mt-search v-model="value" cancel-text="取消" placeholder="搜索">
         <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
             <table class="loadmore-list">
-                <tr v-for="item in result" class="loadmore-listitem">
-                <td align="left" style="font-size:20px;">{{item.name }}</td>
-                <td align="rignt" style="text-align:right;">{{item.album.name}}</td>
+                <tr v-for="item in result" class="loadmore-listitem" @click="choose_music(item)">
+                <td align="left" style="font-size:20px;width:50%">{{item.name }}</td>
+                <td align="rignt" style="text-align:right;width:50%">{{item.album.name}}</td>
                 </tr>
             </table>
         </mt-loadmore>
@@ -16,7 +16,7 @@
             <div style="width:10%;font-size:8px" slot="start">{{play_process_start}}</div>
             <div style="width:10%;font-size:8px" slot="end">{{play_process_end}}</div>
         </mt-range>
-        <audio id='music' src="http://ws.stream.qqmusic.qq.com/107192078.m4a?fromtag=46" autoplay="autoplay">
+        <audio :src="music_url" autoplay="autoplay">
         </audio>
     </div>
     <mt-palette-button :content="expand_flag" @expand="action_expand()" @collapse="action_collapse()"
@@ -30,22 +30,23 @@
   </div>
 </template>
 <script>
-    var qs = require('querystring')
-    import {
-        MessageBox
-    } from 'mint-ui';
+    import { api } from './music_api.js'
+    import { MessageBox } from 'mint-ui';
     export default {
         name: 'app',
         data() {
             return {
                 msg: '云音乐播放器',
+                search_song: '',
+                search_limit: 12,
                 header: '云音乐播发器',
                 value: '',
-                result: '',
+                result: [],
                 expand_flag: '+',
                 play_process: 0,
                 play_process_start: '00:00',
-                play_process_end: '00:00'
+                play_process_end: '00:00',
+                music_url: ''
             }
         },
         methods: {
@@ -53,10 +54,27 @@
                 this.$refs.loadmore.onTopLoaded(id);
             },
             loadBottom(id) {
-                this.allLoaded = true; // 若数据已全部获取完毕
-                this.$refs.loadmore.onBottomLoaded(id);
+                var that = this
+                //console.log(api)
+                api.search(this, this.search_song, this.search_limit + 12, (response) => {
+                    console.log(response)
+                    console.log(that.result)
+                    that.result = response.body.result.songs
+                    console.log(that.result)
+                    that.search_limit += 12
+                    that.allLoaded = true; // 若数据已全部获取完毕
+                    //that.$refs.loadmore.onBottomLoaded(id);
+                })
+                
             },
-
+            choose_music(item) {
+                console.log(item)
+                var that = this
+                api.detail(this, item.id, (response) => {
+                    console.log(response.body.songs[0].mp3Url)
+                    that.music_url = response.body.songs[0].mp3Url
+                })
+            },
             play(music) {
                 console.log(music);
             },
@@ -86,23 +104,14 @@
                     console.log('data null')
                     return;
                 }
-                var data = {
-                    's': val,
-                    'csrf_token': '',
-                    'type': 1,
-                    'offset': 0,
-                    'limit': 10,
-                    'total': true
-                }
+                this.search_song = val
+                this.search_limit = 12
                 var that = this
-                this.$http.post('/api/search/get/web', qs.stringify(data)).then((response) => {
-                    // 响应成功回调
-                    console.log(response.body)
-                    if (response.body.code == 200)
-                        that.result = response.body.result.songs
-                }, (response) => {
-                    console.log('error response')
-                        // 响应错误回调
+                //console.log(api)
+                api.search(that, val, 12, (response) => {
+                    console.log(response)
+                    
+                    that.result = response.body.result.songs
                 })
             }
         }
@@ -120,14 +129,18 @@
         color: #000;
     }
     
+    .mint-loadmore {
+        margin-top: 0;
+    }
     .loadmore-list {
         list-style: none;
         text-align: center;
         color: #666;
         padding-bottom: 5px;
-        &:last-of-type {
+        width: 100%;
+        &:last-child {
             border-bottom: solid 1px #eee;
-        }
+        };
     }
     
     .loadmore-listitem {
