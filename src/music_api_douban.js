@@ -2,15 +2,13 @@ import qs from 'querystring'
 
 const search = (Vue = null, name = null, limit = null, callback = null) => {
     var data = {
-        's': name,
-        'csrf_token': '',
-        'type': 1,
-        'offset': 0,
-        'limit': limit,
-        'total': true
+        'q': name,
+        'start': 0,
+        'count': limit,
     }
     var that = this
-    Vue.$http.post('/api/search/pc', qs.stringify(data)).then((response) => {
+    Vue.$http.get('/api/v2/music/search', {
+        params:data}).then((response) => {
         // 响应成功回调
         callback&&callback(response)
     }, (response) => {

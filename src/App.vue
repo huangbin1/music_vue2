@@ -12,21 +12,17 @@
     </mt-search>
     
     <div id="play-bar">
-        <mt-range v-model="play_process">
+        
+        <mt-range v-model="play_process" :disabled = true >
             <div style="width:10%;font-size:8px" slot="start">{{play_process_start}}</div>
             <div style="width:10%;font-size:8px" slot="end">{{play_process_end}}</div>
         </mt-range>
-        <audio :src="music_url" autoplay="autoplay">
+        <audio id = 'audio' :src="music_url" autoplay="autoplay" @timeupdate ='music_update()'>
         </audio>
+        <div>
+            <span align='center'>{{lyric_one}}</span>
+        </div>
     </div>
-    <mt-palette-button :content="expand_flag" @expand="action_expand()" @collapse="action_collapse()"
-      direction="lt" class="pb" :radius="60" ref="target" mainButtonStyle="color:#fff;background-color:#26a2ff;"
-      style="right:30px;position: absolute">
-      <div class="my-icon-button icon-left" @touchstart="action_touch_left()"></div>
-      <div class="my-icon-button icon-pause" @touchstart="action_touch_pause()"></div>
-      <div class="my-icon-button icon-right" @touchstart="action_touch_right()"></div>
-    </mt-palette-button>
-    
   </div>
 </template>
 <script>
@@ -46,10 +42,34 @@
                 play_process: 0,
                 play_process_start: '00:00',
                 play_process_end: '00:00',
-                music_url: ''
+                music_url: '',
+                lyric_one: '',
+                lyric_string: [],
+                lyric_time: []
             }
         },
         methods: {
+            music_update() {
+                let audio =document.getElementById("audio")
+                for(let i = 1; i < this.lyric_time.length; i++)
+                {
+                    if(audio.currentTime > this.lyric_time[i-1] && audio.currentTime <= this.lyric_time[i])
+                        this.lyric_one = this.lyric_string[i-1]
+                }
+
+                let currentTime_int = parseInt(audio.currentTime)
+                //console.log(currentTime_int)
+                let time_minute = parseInt(currentTime_int/60)
+                let time_seconds = currentTime_int%60
+                //console.log(time_minute)
+                //console.log(time_seconds)
+                let time = time_minute.toString()
+
+                this.play_process_start = time + ':' + time_seconds.toString()
+                let play_process = audio.currentTime/audio.duration
+                //console.log(play_process)
+                this.play_process = parseInt(play_process*100)
+            },
             loadTop(id) {
                 this.$refs.loadmore.onTopLoaded(id);
             },
@@ -73,28 +93,45 @@
                 api.detail(this, item.id, (response) => {
                     console.log(response.body.songs[0].mp3Url)
                     that.music_url = response.body.songs[0].mp3Url
+                    let duration = response.body.songs[0].duration
+                    let duration_int = parseInt(duration/1000)
+                    console.log(duration_int)
+                    let time_minute = parseInt(duration_int/60)
+                    let time_seconds = duration_int%60
+                    console.log(time_minute)
+                    console.log(time_seconds)
+                    let time = time_minute.toString()
+
+                    this.play_process_end = time + ':' + time_seconds.toString()
+                })
+                api.lyric(this, item.id, (response) => {
+                    //console.log(response.body.lrc.lyric)
+                    let lyric = response.body.lrc.lyric
+                    //this.lyric_string = lyric
+                    let lyric_array = lyric.split("\n")
+                    //this.lyric_string = lyric_string
+                    console.log(lyric_array)
+                    let pattern = /\[\d{2}:\d{2}\.\d{2,3}\]/g
+                    let lyric_time = []
+                    for(let i = 0; i < lyric_array.length; i++)
+                    {
+                        let lyric_line = lyric_array[i]
+                        this.lyric_string.push(lyric_line.split(']')[1])
+                        let line = lyric_line.match(pattern)
+                        if(line == null) break
+                        console.log(line[0])
+                        lyric_line = line[0].slice(1,-1)
+                        let time_arr = lyric_line.split(":")
+                        let time =parseInt(time_arr[0])*60 + parseFloat(time_arr[1]);
+                        lyric_time.push(time)
+                    }
+                    console.log(lyric_time)
+                    console.log(this.lyric_string)
+                    this.lyric_time = lyric_time
                 })
             },
             play(music) {
                 console.log(music);
-            },
-            action_expand() {
-                this.expand_flag = 'x';
-            },
-            action_collapse() {
-                this.expand_flag = '+';
-            },
-            action_touch_left() {
-                this.$refs.target.collapse();
-                this.expand_flag = '+';
-            },
-            action_touch_pause() {
-                this.$refs.target.collapse();
-                this.expand_flag = '+';
-            },
-            action_touch_right() {
-                this.$refs.target.collapse();
-                this.expand_flag = '+';
             }
         },
         watch: {
@@ -113,6 +150,9 @@
                     
                     that.result = response.body.result.songs
                 })
+            },
+            music_duration: function(val, oldVal) {
+                console.log('new: %s, old: %s', val, oldVal)
             }
         }
     }
@@ -157,12 +197,12 @@
         position: fixed;
         bottom: 0;
         width: 100%;
-        height: 50px;
+        height: 80px;
         background: -webkit-linear-gradient(top, #ffffff, #26a2ff);
     }
     
     .mt-range {
-        margin-top: -15px;
+        margin-top: 0;
     }
     
     .mt-range-progress {

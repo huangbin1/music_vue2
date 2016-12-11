@@ -30,7 +30,7 @@ module.exports = {
                     '^/api': ''
                 },
                 headers: {
-                    'Referer': 'http://music.163.com/search/',
+                    'Referer': 'http://music.163.com/',
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
