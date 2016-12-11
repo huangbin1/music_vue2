@@ -4,6 +4,8 @@
 -----
 ![](https://github.com/huangbin1/music_vue2/blob/master/music_vue2.gif)
 -----
+演示网址：![云音乐播放器](https://huangbin1.github.io/music_vue2/)
+-----
 ### 使用npm安装依赖模块可能会很慢，建议换成cnpm 
 ````sh
 	npm install -g cnpm --registry=http://registry.npm.taobao.org
