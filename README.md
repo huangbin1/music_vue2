@@ -5,7 +5,7 @@
 -----
 ### 预览
 -----
-![](https://github.com/huangbin1/music_vue2/blob/master/music_vue2.gif)
+![](https://github.com/huangbin1/music_vue2/blob/master/music_vue2.png)
 -----
 github项目演示网址：[云音乐播放器](https://huangbin1.github.io/music_vue2/)
 -----
