@@ -1,5 +1,8 @@
 ## 云音乐播放器
 -----
+## 扫码查看，也可以直接进入:![云音乐播放器](http://xxw.hpy.wiki:8080)
+![music_vue2二维码](https://github.com/huangbin1/music_vue2/blob/master/music_vue2_qcode.gif)
+-----
 ### 预览
 -----
 ![](https://github.com/huangbin1/music_vue2/blob/master/music_vue2.gif)
