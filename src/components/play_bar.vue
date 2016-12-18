@@ -77,7 +77,7 @@
                     this.play_process_end = time + ':' + time_seconds.toString()
                 })
                 api.lyric(this, val, (response) => {
-                    //console.log(response.body.lrc.lyric)
+                    //console.log(response.body)
                     let lyric = response.body.lrc.lyric
                         //this.lyric_string = lyric
                     let lyric_array = lyric.split("\n")

@@ -3,9 +3,9 @@
     <mt-search v-model="search_data" cancel-text="取消" placeholder="搜索">
         <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
             <table class="loadmore-list">
-                <tr v-for="item in search_result" class="loadmore-listitem" @click="chooseMusic(item)">
-                <td align="left" style="font-size:20px;width:50%">{{item.name }}</td>
-                <td align="rignt" style="text-align:right;width:50%">{{item.album.name}}</td>
+                <tr v-for="item in search_result" class="loadmore-listitem"  @click="chooseMusic(item)">
+                <td align="left" :class="{playleft: item.music_play}" style="font-size:20px;width:50%">{{item.name }}</td>
+                <td align="rignt":class="{playright: item.music_play}" style="text-align:right;width:50%;margin-left:-1px">{{item.artists[0].name}}</td>
                 </tr>
             </table>
         </mt-loadmore>
@@ -30,7 +30,8 @@
                 search_result: [],
                 search_data: '',
                 app_header: '云音乐播发器',
-                music_id: 0
+                music_id: 0,
+                music_play: false
             }
         },
         methods: {
@@ -48,6 +49,14 @@
             },
             chooseMusic(item) {
                 this.music_id = item.id
+                
+                for(let i=0; i < this.search_result.length; i++)
+                {
+                    this.search_result[i].music_play = false
+                }
+
+                item.music_play = true
+                //console.log(item)
             }
         },
         watch: {
@@ -114,4 +123,15 @@
             border-top: solid 1px #eee;
         }
     }
+    .playleft {
+        margin-left: -2px;
+        border-left: solid 4px #55acec;
+        border-top: solid 1px #dddddd;
+        border-bottom: solid 1px #dddddd;
+        }
+    .playright {
+        margin-left: -1px;
+        border-top: solid 1px #dddddd;
+        border-bottom: solid 1px #dddddd;
+        }
 </style>
