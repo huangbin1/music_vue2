@@ -6,8 +6,8 @@
     </mt-range>
     <audio id = 'audio' :src="music_url" @error="audioError()" autoplay="autoplay" @timeupdate ='audioUpdate()'>
     </audio>
-    <div>
-      <span align='center'>{{lyric_one}}</span>
+    <div style="width:100%;text-align: center">
+      <span>{{lyric_one}}</span>
     </div>
   </div>
 </template>
@@ -19,18 +19,24 @@
         name: 'play-bar',
         data() {
             return {
+                /* 进度条进度 */
                 play_process: 0,
-                play_process_start: 0,
-                play_process_end: 0,
-                music_url: '',
-                play_process: 0,
+                /* 进度条左侧：已经播放时间 */
                 play_process_start: '00:00',
+                /* 进度条右侧：音乐总时长 */
                 play_process_end: '00:00',
+                /* 歌曲url */
+                music_url: '',
+                /* 每一行歌词 数组 */
                 lyric_string: [],
+                /* 每一行歌词的时间 数组 */
                 lyric_time: [],
+                /* 当前显示的歌词 */
                 lyric_one: '',
             }
         },
+
+        /* 从父组件获取音乐id */
         props: ["bar_music_id"],
         methods: {
             audioUpdate() {
@@ -61,29 +67,31 @@
         watch: {
             bar_music_id: function(val, oldval) {
                 console.log(val)
+                /* 滚动条和歌词清0 */
+                this.play_process = 0
+                this.lyric_one = ''
                 var that = this
+
+                /* 获取歌曲url */
                 api.detail(this, val, (response) => {
-                    //console.log(response.body.songs[0].mp3Url)
                     that.music_url = response.body.songs[0].mp3Url
+
+                    /* 获取歌曲时长并显示到滚动条右边 */
                     let duration = response.body.songs[0].duration
                     let duration_int = parseInt(duration / 1000)
-                        //console.log(duration_int)
                     let time_minute = parseInt(duration_int / 60)
                     let time_seconds = duration_int % 60
-                        //console.log(time_minute)
-                        //console.log(time_seconds)
                     let time = time_minute.toString()
-
                     this.play_process_end = time + ':' + time_seconds.toString()
                 })
+                
+                /* 获取歌词 */
                 api.lyric(this, val, (response) => {
-                    //console.log(response.body)
                     let lyric = response.body.lrc.lyric
-                        //this.lyric_string = lyric
                     let lyric_array = lyric.split("\n")
-                        //this.lyric_string = lyric_string
                     let lyric_string = []
-                        //console.log(lyric_array)
+
+                    /* 根据正则表达式获取歌词时间数组 */
                     let pattern = /\[\d{2}:\d{2}\.\d{2,3}\]/g
                     let lyric_time = []
                     for (let i = 0; i < lyric_array.length; i++) {
@@ -97,8 +105,6 @@
                         let time = parseInt(time_arr[0]) * 60 + parseFloat(time_arr[1]);
                         lyric_time.push(time)
                     }
-                    //console.log(lyric_time)
-                    //console.log(lyric_string)
                     this.lyric_time = lyric_time
                     this.lyric_string = lyric_string
                 })
