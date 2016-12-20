@@ -1,19 +1,14 @@
 <template>
     <div id="app">
         <mt-header fixed title="云音乐播放器"></mt-header>
-        <mt-search v-model="search_song" cancel-text="取消" placeholder="搜索" class="search">
+        <mt-search v-show="play_panel" v-model="search_song" cancel-text="取消" placeholder="搜索" class="search">
             <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
-                
-                    <div v-for="item in search_result" class="loadmore-list" @click="chooseMusic(item)">
+                <transition-group name="lm-fade">
+                    <div v-for="item in search_result" class="loadmore-list" @click="chooseMusic(item)" :key="item.name">
                         <div class="loadmore-listitem-l" :class="{playleft: item.music_play}">{{item.name}}</div>
                         <div class="loadmore-listitem-r">{{item.artists[0].name}}</div>
                     </div>
-                    <!--<table class="loadmore-list">
-                <tr v-for="item in search_result" class="loadmore-listitem"  @click="chooseMusic(item)">
-                <td align="left" class="playdd" :class="{playleft: item.music_play}">{{item.name }}</td>
-                <td align="rignt":class="{playright: item.music_play}" style="text-align:right;width:50%">{{item.artists[0].name}}</td>
-                </tr>
-            </table>-->
+                </transition-group>
             </mt-loadmore>
         </mt-search>
         <play-bar :bar_music_id="music_id"></play-bar>
@@ -22,22 +17,23 @@
 <script>
     import {
         api
-    } from './music_api.js'
-    import PlayBar from './components/play_bar.vue'
+    } from '../music_api.js'
+    import PlayBar from '../components/play_bar.vue'
     export default {
         name: 'app',
         data() {
             return {
                 /* 搜索关键词 */
                 search_song: '',
-                /* 一次seach请求获取多少组数据 */ 
+                /* 一次seach请求获取多少组数据 */
                 search_limit: 12,
                 /* seach请求结果 */
                 search_result: [],
                 search_data: '',
                 app_header: '云音乐播发器',
                 music_id: 0,
-                music_play: false
+                music_play: false,
+                play_panel: true
             }
         },
         methods: {
@@ -46,17 +42,23 @@
                 var that = this
                     //console.log(api)
                 api.search(this, this.search_song, this.search_limit + 12, (response) => {
-                    console.log(response)
-                    that.search_result = response.body.result.songs
+                    //console.log(response)
+                    let songs = response.body.result.songs
+                    for (let i = 0; i < that.search_result.length; i++) {
+                        if (that.search_result[i].music_play == true) {
+                            songs[i].music_play = true;
+                            break
+                        }
+                    }
+                    that.search_result = songs
                     that.search_limit += 12
                     that.allLoaded = true; // 若数据已全部获取完毕
                 })
             },
             chooseMusic(item) {
                 this.music_id = item.id
-                
-                for(let i=0; i < this.search_result.length; i++)
-                {
+
+                for (let i = 0; i < this.search_result.length; i++) {
                     this.search_result[i].music_play = false
                 }
 
@@ -75,7 +77,7 @@
                 this.search_song = val
                 this.search_limit = 12
                 var that = this
-                
+
                 /* 请求搜索数据列表 */
                 api.search(that, val, 12, (response) => {
                     console.log(response)
@@ -99,44 +101,19 @@
         -moz-osx-font-smoothing: grayscale;
         color: #2c3e50;
     }
+    
     .search {
         padding-top: 40px;
     }
-
-    /*.mint-loadmore {
-        margin-top: 0;
+    
+    .mint-search-list {
+        padding-top: 100px !important;
     }
     
-    .loadmore-list {
-        list-style: none;
-        text-align: center;
-        color: #666;
-        padding-bottom: 5px;
-        width: 100%;
-        &:last-child {
-            border-bottom: solid 1px #eee;
-        }
-        ;
-    }
-    
-    .loadmore-listitem {
-        height: 50px;
-        line-height: 50px;
-        border-bottom: solid 1px #eee;
-        text-align: center;
-        
-        &:first-child {
-            border-top: solid 1px #eee;
-        }
-    }*/
-    
-    .mint-search-list{
-        padding-top:100px !important;
-        
-    }
     .is-dropped {
-        padding-top:50px !important;
+        padding-top: 50px !important;
     }
+    
     .loadmore-list {
         flex: 1;
         display: flex;
@@ -144,8 +121,8 @@
         height: 40px;
         border-bottom: solid 1px #dddddd;
         text-align: center;
-        vertical-align:middle;
-        line-height:40px;
+        vertical-align: middle;
+        line-height: 40px;
     }
     
     .loadmore-listitem-l {
@@ -169,13 +146,17 @@
         border-bottom: solid 1px #dddddd;
     }
     
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity .5s
+    .lm-fade-enter-active {
+        transition: all .3s ease;
     }
     
-    .fade-enter,
-    .fade-leave-active {
-        opacity: 0
+    .lm-fade-leave-active {
+        transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+    
+    .lm-fade-enter,
+    .lm-fade-leave {
+        transform: translateX(10px);
+        opacity: 0;
     }
 </style>

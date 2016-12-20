@@ -6,7 +6,7 @@
     </mt-range>
     <audio id = 'audio' :src="music_url" @error="audioError()" autoplay="autoplay" @timeupdate ='audioUpdate()'>
     </audio>
-    <div style="width:100%;text-align: center">
+    <div style="width:100%;text-align: center"  @click="enterPlayPanel()">
       <span>{{lyric_one}}</span>
     </div>
   </div>
@@ -62,12 +62,16 @@
             audioError(err) {
                 console.log("无法播放音乐")
                 this.lyric_one = '无法播放音乐'
+            },
+            enterPlayPanel() {
+                console.log("fdsafd")
+                this.play_panel = false
             }
         },
         watch: {
             bar_music_id: function(val, oldval) {
                 console.log(val)
-                /* 滚动条和歌词清0 */
+                    /* 滚动条和歌词清0 */
                 this.play_process = 0
                 this.lyric_one = ''
                 var that = this
@@ -84,7 +88,7 @@
                     let time = time_minute.toString()
                     this.play_process_end = time + ':' + time_seconds.toString()
                 })
-                
+
                 /* 获取歌词 */
                 api.lyric(this, val, (response) => {
                     let lyric = response.body.lrc.lyric
