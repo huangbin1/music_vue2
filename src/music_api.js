@@ -12,7 +12,7 @@ const search = (Vue = null, name = null, limit = null, callback = null) => {
     var that = this
     Vue.$http.post('/api/search/pc', qs.stringify(data)).then((response) => {
         // 响应成功回调
-        callback&&callback(response)
+        callback && callback(response)
     }, (response) => {
         console.log('error response')
             // 响应错误回调
@@ -21,20 +21,30 @@ const search = (Vue = null, name = null, limit = null, callback = null) => {
 
 const detail = (Vue = null, id = null, callback = null) => {
     var that = this
-    Vue.$http.get("/api/song/detail?id="+id+"&ids="+'%5B'+id+'%5D').then((response) => {
+    Vue.$http.get("/api/song/detail?id=" + id + "&ids=" + '%5B' + id + '%5D').then((response) => {
         // 响应成功回调
-        callback&&callback(response)
+        callback && callback(response)
     }, (response) => {
         console.log('error response')
             // 响应错误回调
     })
 }
 
+const toplist_new = (Vue = null, callback = null) => {
+    var that = this
+    Vue.$http.get("/api/discover/toplist?id=3779629").then((response) => {
+        // 响应成功回调
+        callback && callback(response)
+    }, (response) => {
+        console.log('error response')
+            // 响应错误回调
+    })
+}
 const lyric = (Vue = null, id = null, callback = null) => {
     var that = this
-    Vue.$http.get("/api/song/lyric?os=pc&id="+id+'&lv=-1&kv=-1&tv=-1').then((response) => {
+    Vue.$http.get("/api/song/lyric?os=pc&id=" + id + '&lv=-1&kv=-1&tv=-1').then((response) => {
         // 响应成功回调
-        callback&&callback(response)
+        callback && callback(response)
     }, (response) => {
         console.log('error response')
             // 响应错误回调
@@ -42,8 +52,9 @@ const lyric = (Vue = null, id = null, callback = null) => {
 }
 
 let api = {
-  search: search,
-  detail: detail,
-  lyric:  lyric
+    search: search,
+    detail: detail,
+    lyric: lyric,
+    toplist_new: toplist_new
 }
-module.exports = {api}
+module.exports = { api }

@@ -1,17 +1,54 @@
 <template>
     <div id="app">
         <mt-header fixed title="云音乐播放器"></mt-header>
-        <mt-search v-show="play_panel" v-model="search_song" cancel-text="取消" placeholder="搜索" class="search">
-            <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
-                <transition-group name="lm-fade">
-                    <div v-for="item in search_result" class="loadmore-list" @click="chooseMusic(item)" :key="item.name">
-                        <div class="loadmore-listitem-l" :class="{playleft: item.music_play}">{{item.name}}</div>
-                        <div class="loadmore-listitem-r">{{item.artists[0].name}}</div>
-                    </div>
-                </transition-group>
-            </mt-loadmore>
-        </mt-search>
-        <play-bar :bar_music_id="music_id"></play-bar>
+        <mt-tab-container class="tabbar-container" v-model="tab_selected">
+            <mt-tab-container-item id="热门歌曲">
+                <mt-cell v-for="n in 10" :title="'餐厅 ' + n" />
+            </mt-tab-container-item>
+
+            <mt-tab-container-item id="热门歌手">
+                <mt-cell v-for="n in 5" :title="'订单 ' + n" />
+            </mt-tab-container-item>
+
+            <mt-tab-container-item id="搜索">
+                <mt-search v-show="play_panel" v-model="search_song" cancel-text="取消" placeholder="搜索" class="search">
+                    <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
+                        <transition-group name="lm-fade">
+                            <div v-for="item in search_result" class="loadmore-list" @click="chooseMusic(item)" :key="item.name">
+                                <div class="loadmore-listitem-l" :class="{playleft: item.music_play}">{{item.name}}</div>
+                                <div class="loadmore-listitem-r">{{item.artists[0].name}}</div>
+                            </div>
+                        </transition-group>
+                    </mt-loadmore>
+                </mt-search>
+                <play-bar :bar_music_id="music_id"></play-bar>
+            </mt-tab-container-item>
+
+            <mt-tab-container-item id="我的">
+                <div class="page-part">
+                    <mt-cell v-for="n in 12" :title="'我的 ' + n" />
+                </div>
+            </mt-tab-container-item>
+        </mt-tab-container>
+        <mt-tabbar fixed v-model="tab_selected">
+        <mt-tab-item id="热门歌曲">
+            <img slot="icon" src="../assets/热门歌曲.png">
+            热门歌曲
+        </mt-tab-item>
+        <mt-tab-item id="热门歌手">
+            <img slot="icon" src="../assets/热门歌手.png">
+            热门歌手
+        </mt-tab-item>
+        <mt-tab-item id="搜索">
+            <img slot="icon" src="../assets/搜索.png">
+            搜索
+        </mt-tab-item>
+        <mt-tab-item id="我的">
+            <img slot="icon" src="../assets/我的.png">
+            我的
+        </mt-tab-item>
+        </mt-tabbar>
+        
     </div>
 </template>
 <script>
@@ -33,7 +70,8 @@
                 app_header: '云音乐播发器',
                 music_id: 0,
                 music_play: false,
-                play_panel: true
+                play_panel: true,
+                tab_selected: "搜索"
             }
         },
         methods: {
@@ -87,6 +125,12 @@
                     }
                     that.search_result = response.body.result.songs
                 })
+            },
+            tab_selected: function(val, oldVal) {
+                var that = this
+                api.toplist_new(that, (response) => {
+                    console.log(response)
+                })
             }
         },
         components: {
@@ -102,7 +146,7 @@
         color: #2c3e50;
     }
     
-    .search {
+    .tabbar-container {
         padding-top: 40px;
     }
     

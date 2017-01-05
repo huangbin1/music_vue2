@@ -119,7 +119,7 @@
 <style>
     #play-bar {
         position: fixed;
-        bottom: 0;
+        bottom: 50px;
         width: 100%;
         height: 80px;
         background: -webkit-linear-gradient(top, #ffffff, #26a2ff);
