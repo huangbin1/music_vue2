@@ -24,10 +24,21 @@ module.exports = {
         proxyTable: {
             // proxy all requests starting with /api to jsonplaceholder
             '/api': {
-                target: 'http://music.163.com/api',
+                target: 'http://music.163.com/',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': ''
+                },
+                headers: {
+                    'Referer': 'http://music.163.com/',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            },
+            '/discover': {
+                target: 'http://music.163.com/',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/discover': '/discover'
                 },
                 headers: {
                     'Referer': 'http://music.163.com/',
