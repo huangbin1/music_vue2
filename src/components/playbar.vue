@@ -12,9 +12,7 @@
   </div>
 </template>
 <script>
-    import {
-        api
-    } from '../music_api.js'
+    import {api} from '../music_api.js'
     export default {
         name: 'play-bar',
         data() {

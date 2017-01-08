@@ -1,9 +1,13 @@
 <template>
     <div id="app">
         <mt-header fixed title="云音乐播放器"></mt-header>
+        <!--<router-link to="/home">About</router-link>-->
+        <!-- 路由出口 -->
+        <!-- 路由匹配到的组件将渲染在这里 -->
+        <!--<router-view></router-view>-->
         <mt-tab-container class="tabbar-container" v-model="tab_selected">
-            <mt-tab-container-item id="热门歌曲">
-                <mt-cell v-for="n in 10" :title="'餐厅 ' + n" />
+            <mt-tab-container-item id="歌曲榜单">
+                <top-list></top-list>
             </mt-tab-container-item>
 
             <mt-tab-container-item id="热门歌手">
@@ -31,9 +35,9 @@
             </mt-tab-container-item>
         </mt-tab-container>
         <mt-tabbar fixed v-model="tab_selected">
-        <mt-tab-item id="热门歌曲">
-            <img slot="icon" src="../assets/热门歌曲.png">
-            热门歌曲
+        <mt-tab-item id="歌曲榜单">
+            <img slot="icon" src="../assets/歌曲榜单.png">
+            歌曲榜单
         </mt-tab-item>
         <mt-tab-item id="热门歌手">
             <img slot="icon" src="../assets/热门歌手.png">
@@ -55,7 +59,8 @@
     import {
         api
     } from '../music_api.js'
-    import PlayBar from '../components/play_bar.vue'
+    import PlayBar from '../components/playbar.vue'
+    import TopList from '../components/toplist.vue'
     export default {
         name: 'app',
         data() {
@@ -71,31 +76,34 @@
                 music_id: 0,
                 music_play: false,
                 play_panel: true,
-                tab_selected: "搜索"
+                tab_selected: "歌曲榜单"
+                
             }
         },
         methods: {
             /* 下拉刷新列表 */
             loadBottom(id) {
-                var that = this
-                    //console.log(api)
-                api.search(this, this.search_song, this.search_limit + 12, (response) => {
-                    //console.log(response)
+                let that = this
+                api.search(that, that.search_song, that.search_limit + 12, (response) => {
                     let songs = response.body.result.songs
+                    /* 下拉刷新的时候需要保持正在播放歌曲的左侧标志 */
                     for (let i = 0; i < that.search_result.length; i++) {
                         if (that.search_result[i].music_play == true) {
                             songs[i].music_play = true;
                             break
                         }
                     }
+                    /* 更新歌曲列表 */
                     that.search_result = songs
                     that.search_limit += 12
-                    that.allLoaded = true; // 若数据已全部获取完毕
+                    /* 数据已全部获取完毕,清除缓冲图标 */
+                    that.allLoaded = true;
                 })
+                
             },
             chooseMusic(item) {
                 this.music_id = item.id
-
+                let that = this
                 for (let i = 0; i < this.search_result.length; i++) {
                     this.search_result[i].music_play = false
                 }
@@ -114,33 +122,26 @@
 
                 this.search_song = val
                 this.search_limit = 12
-                var that = this
+                let that = this
 
                 /* 请求搜索数据列表 */
                 api.search(that, val, 12, (response) => {
-                    console.log(response)
-                    if (response.body.code != 200) {
-                        console.log("response code != 200")
-                        return
-                    }
                     that.search_result = response.body.result.songs
                 })
+                console.log(this.search_result)
             },
             tab_selected: function(val, oldVal) {
-                var that = this
-                api.toplist_new(that, (response) => {
-                    console.log(response)
-                })
             }
         },
         components: {
-            PlayBar
+            PlayBar,
+            TopList
         }
     }
 </script>
 <style>
     #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        font-family: Arial, 微软雅黑, "Microsoft yahei", "Hiragino Sans GB", "冬青黑体简体中文 w3", STXihei, 华文细黑, SimSun, 宋体, Heiti, 黑体, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         color: #2c3e50;
