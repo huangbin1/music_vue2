@@ -1,10 +1,6 @@
 <template>
     <div id="app">
         <mt-header fixed title="云音乐播放器"></mt-header>
-        <!--<router-link to="/home">About</router-link>-->
-        <!-- 路由出口 -->
-        <!-- 路由匹配到的组件将渲染在这里 -->
-        <!--<router-view></router-view>-->
         <mt-tab-container class="tabbar-container" v-model="tab_selected">
             <mt-tab-container-item id="歌曲榜单">
                 <top-list></top-list>
@@ -36,19 +32,19 @@
         </mt-tab-container>
         <mt-tabbar fixed v-model="tab_selected">
         <mt-tab-item id="歌曲榜单">
-            <img slot="icon" src="../assets/歌曲榜单.png">
+            <img slot="icon" src="./assets/歌曲榜单.png">
             歌曲榜单
         </mt-tab-item>
         <mt-tab-item id="热门歌手">
-            <img slot="icon" src="../assets/热门歌手.png">
+            <img slot="icon" src="./assets/热门歌手.png">
             热门歌手
         </mt-tab-item>
         <mt-tab-item id="搜索">
-            <img slot="icon" src="../assets/搜索.png">
+            <img slot="icon" src="./assets/搜索.png">
             搜索
         </mt-tab-item>
         <mt-tab-item id="我的">
-            <img slot="icon" src="../assets/我的.png">
+            <img slot="icon" src="./assets/我的.png">
             我的
         </mt-tab-item>
         </mt-tabbar>
@@ -58,9 +54,9 @@
 <script>
     import {
         api
-    } from '../music_api.js'
-    import PlayBar from '../components/playbar.vue'
-    import TopList from '../components/toplist.vue'
+    } from './music_api.js'
+    import PlayBar from './components/playbar.vue'
+    import TopList from './components/toplist.vue'
     export default {
         name: 'app',
         data() {
@@ -77,7 +73,7 @@
                 music_play: false,
                 play_panel: true,
                 tab_selected: "歌曲榜单"
-                
+
             }
         },
         methods: {
@@ -86,7 +82,7 @@
                 let that = this
                 api.search(that, that.search_song, that.search_limit + 12, (response) => {
                     let songs = response.body.result.songs
-                    /* 下拉刷新的时候需要保持正在播放歌曲的左侧标志 */
+                        /* 下拉刷新的时候需要保持正在播放歌曲的左侧标志 */
                     for (let i = 0; i < that.search_result.length; i++) {
                         if (that.search_result[i].music_play == true) {
                             songs[i].music_play = true;
@@ -96,10 +92,10 @@
                     /* 更新歌曲列表 */
                     that.search_result = songs
                     that.search_limit += 12
-                    /* 数据已全部获取完毕,清除缓冲图标 */
+                        /* 数据已全部获取完毕,清除缓冲图标 */
                     that.allLoaded = true;
                 })
-                
+
             },
             chooseMusic(item) {
                 this.music_id = item.id
@@ -130,8 +126,7 @@
                 })
                 console.log(this.search_result)
             },
-            tab_selected: function(val, oldVal) {
-            }
+            tab_selected: function(val, oldVal) {}
         },
         components: {
             PlayBar,
@@ -143,12 +138,14 @@
     #app {
         font-family: Arial, 微软雅黑, "Microsoft yahei", "Hiragino Sans GB", "冬青黑体简体中文 w3", STXihei, 华文细黑, SimSun, 宋体, Heiti, 黑体, sans-serif;
         -webkit-font-smoothing: antialiased;
+        -webkit-overflow-scrolling: touch;
         -moz-osx-font-smoothing: grayscale;
         color: #2c3e50;
     }
     
     .tabbar-container {
         padding-top: 40px;
+        padding-bottom: 55px;
     }
     
     .mint-search-list {
@@ -168,6 +165,9 @@
         text-align: center;
         vertical-align: middle;
         line-height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     
     .loadmore-listitem-l {
@@ -190,8 +190,7 @@
         border-top: solid 1px #dddddd;
         border-bottom: solid 1px #dddddd;
     }
-    
-    .lm-fade-enter-active {
+    /*.lm-fade-enter-active {
         transition: all .3s ease;
     }
     
@@ -202,6 +201,19 @@
     .lm-fade-enter,
     .lm-fade-leave {
         transform: translateX(10px);
+        opacity: 0;
+    }*/
+    
+    .routerfade-enter-active {
+        transition: all .3s ease;
+    }
+    
+    .routerfade-leave-active {
+        transition: all .3s ease-out;
+    }
+    
+    .routerfade-enter,
+    .routerfade-leave-active {
         opacity: 0;
     }
 </style>
