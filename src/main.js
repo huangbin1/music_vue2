@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 const routes = [
-    { path: '/toplistpage', name: 'toplistpage', component: TopListPage }
+    { path: '/toplistpage:id', name: 'toplistpage', component: TopListPage }
 ]
 
 const router = new VueRouter({

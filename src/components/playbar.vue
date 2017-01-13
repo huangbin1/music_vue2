@@ -1,18 +1,25 @@
 <template>
   <div id="play-bar">
-    <mt-range v-model="play_process" :disabled = true >
-      <div style="width:10%;font-size:8px" slot="start">{{play_process_start}}</div>
-      <div style="width:10%;font-size:8px" slot="end">{{play_process_end}}</div>
-    </mt-range>
-    <audio id = 'audio' :src="music_url" @error="audioError()" autoplay="autoplay" @timeupdate ='audioUpdate()'>
-    </audio>
-    <div style="width:100%;text-align: center"  @click="enterPlayPanel()">
-      <span>{{lyric_one}}</span>
+    <div class="play-img" :style="img_rorate_update">
+        <img :src="music_img" height="280" width="280"></img>
+    </div>
+    <div class="play-bottom">
+        <mt-range v-model="play_process" :disabled = true >
+        <div style="width:10%;font-size:8px" slot="start">{{play_process_start}}</div>
+        <div style="width:10%;font-size:8px" slot="end">{{play_process_end}}</div>
+        </mt-range>
+        <audio id = 'audio' :src="music_url" @error="audioError()" autoplay="autoplay" @timeupdate ='audioUpdate()'>
+        </audio>
+        <div style="width:100%;text-align: center"  @click="enterPlayPanel()">
+        <span>{{lyric_one}}</span>
+        </div>
     </div>
   </div>
 </template>
 <script>
-    import {api} from '../music_api.js'
+    import {
+        api
+    } from '../music_api.js'
     export default {
         name: 'play-bar',
         data() {
@@ -25,6 +32,10 @@
                 play_process_end: '00:00',
                 /* 歌曲url */
                 music_url: '',
+                /* 唱片图片 */
+                music_img: '',
+                img_rorate_update: '',
+                img_rorate: 0,
                 /* 每一行歌词 数组 */
                 lyric_string: [],
                 /* 每一行歌词的时间 数组 */
@@ -62,8 +73,12 @@
                 this.lyric_one = '无法播放音乐'
             },
             enterPlayPanel() {
-                console.log("fdsafd")
                 this.play_panel = false
+            },
+            img_rorate_emit: function(val, oldval) {
+                console.log("fdsafd")
+                this.img_rorate += 0.5;
+                this.img_rorate_update = '-webkit-transform: rotate(' + this.img_rorate + 'deg);'
             }
         },
         watch: {
@@ -73,18 +88,20 @@
                 this.play_process = 0
                 this.lyric_one = ''
                 var that = this
-
+                console.log(that)
+                window.setInterval(that.img_rorate_emit, 50);
                 /* 获取歌曲url */
                 api.detail(this, val, (response) => {
                     that.music_url = response.body.songs[0].mp3Url
-
-                    /* 获取歌曲时长并显示到滚动条右边 */
+                    that.music_img = response.body.songs[0].album.blurPicUrl
+                        /* 获取歌曲时长并显示到滚动条右边 */
                     let duration = response.body.songs[0].duration
                     let duration_int = parseInt(duration / 1000)
                     let time_minute = parseInt(duration_int / 60)
                     let time_seconds = duration_int % 60
                     let time = time_minute.toString()
                     this.play_process_end = time + ':' + time_seconds.toString()
+
                 })
 
                 /* 获取歌词 */
@@ -115,12 +132,23 @@
     }
 </script>
 <style>
-    #play-bar {
+    .play-bottom {
         position: fixed;
         bottom: 50px;
         width: 100%;
         height: 80px;
         background: -webkit-linear-gradient(top, #ffffff, #26a2ff);
+    }
+    
+    .play-img {
+        width: 280px;
+        height: 280px;
+        margin: 50px auto;
+    }
+    
+    .play-img img {
+        border-radius: 100%;
+        border: solid 4px #dddddd;
     }
     
     .mt-range {

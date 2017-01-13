@@ -1,18 +1,23 @@
 <template>
   <div id="toplistpage">
-    <mt-header fixed :title="toplist_item.name">
-        <mt-button icon="back" slot="left" @click="BackToApp()">返回</mt-button>
+    <mt-header :title="toplist_item.name" fixed>
+        <router-link to="/" slot="left">
+            <mt-button icon="back">返回</mt-button>
+        </router-link>
         <mt-button icon="more" slot="right"></mt-button>
     </mt-header>
-    <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
+    <!--<router-link class="page-back" :to="'/'">
+        <div class="mintui mintui-back">返回</div>
+        <div class="mintui mintui-back">{{toplist_item.name}}</div>
+    </router-link>-->
+    <mt-loadmore :auto-fill="false" :bottom-method="TopListLoadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
         <transition-group name="lm-fade">
-            <div v-for="item in toplist_item.songs" class="loadmore-list" @click="chooseMusic(item)" :key="item.name">
+            <div v-for="item in toplist_item.songs" class="loadmore-list" @click="ChooseMusic(item)" :key="item.name">
                 <div class="loadmore-listitem-l" :class="{playleft: item.music_play}">{{item.name}}</div>
                 <div class="loadmore-listitem-r">{{item.artists[0].name}}</div>
             </div>
         </transition-group>
     </mt-loadmore>
-    <play-bar :bar_music_id="music_id"></play-bar>
   </div>
 </template>
 
@@ -27,14 +32,18 @@
             PlayBar
         },
         /* 进入路由 钩子函数 */
-        // beforeRouteEnter: function(to, from, next) {
-        //     console.log("进入路由 钩子函数")
-        //     console.log(to)
-        //     console.log(from)
-        //     next(vm => {
-        //         console.log(vm)
-        //     })
-        // },
+        beforeRouteEnter: function(to, from, next) {
+            console.log("进入路由 钩子函数")
+            next(vm => {
+                console.log(vm)
+                console.log(vm.$route.params)
+                vm.toplist_item = vm.$route.params.toplist
+                console.log(vm.toplist_item)
+                vm.get_in_router = vm.$route.params.get_in_router
+                if (vm.toplist_item.songs.length <= 3)
+                    vm.loadmore_detail_r(9)
+            })
+        },
         beforeRouteLeave: function(to, from, next) {
             console.log("退出路由 钩子函数")
                 /* 不显示路由 */
@@ -47,20 +56,27 @@
                 loadmore_cnt: 3,
                 menuedIndex: 0,
                 get_in_router: null,
-                music_id: ''
+                music_id: '',
+                allLoaded: false
             }
         },
         methods: {
-            BackToApp: function() {
-                this.$router.back()
-            },
-            loadBottom: function() {
+            // BackToApp: function() {
+            //     console.log("路由返回")
+            //     this.$router.go(-1)
+            // },
+            TopListLoadBottom(id) {
+                console.log("TopListLoadBottom" + id)
                 this.loadmore_detail_r(12)
+
             },
             loadmore_detail_r: function(cnt) {
                 var that = this
                 if (cnt == 0) {
                     console.log("detail enough")
+                        //this.allLoaded = true; // 若数据已全部获取完毕
+                    this.$refs.loadmore.onTopLoaded()
+                    this.$refs.loadmore.onBottomLoaded()
                     return
                 }
                 console.log(that.loadmore_cnt)
@@ -72,8 +88,11 @@
                     that.loadmore_detail_r(cnt)
                 })
             },
-            chooseMusic(item) {
+            ChooseMusic(item) {
                 this.music_id = item.id
+                console.log("发送广播" + this.music_id)
+                console.log(this.$parent)
+                this.$parent.$data.music_id = this.music_id
                 let that = this
                 for (let i = 0; i < this.toplist_item.songs.length; i++) {
                     this.toplist_item.songs[i].music_play = false
@@ -85,10 +104,10 @@
         },
 
         created: function() {
-            console.log(this.$route.params)
             this.toplist_item = this.$route.params.toplist
             console.log(this.toplist_item)
             this.get_in_router = this.$route.params.get_in_router
+            this.loadmore_detail_r(9)
         }
     }
 </script>
@@ -129,7 +148,7 @@
         flex-direction: row;
         height: 40px;
         border-bottom: solid 1px #dddddd;
-        text-align: center;
+        text-align: left;
         vertical-align: middle;
         line-height: 40px;
     }
@@ -148,7 +167,8 @@
         margin-left: 0;
         border-left: solid 4px #55acec;
     }
-    /*.lm-fade-enter-active {
+    
+    .lm-fade-enter-active {
         transition: all .3s ease;
     }
     
@@ -160,5 +180,5 @@
     .lm-fade-leave {
         transform: translateX(10px);
         opacity: 0;
-    }*/
+    }
 </style>

@@ -42,6 +42,7 @@
                 get_in_router: {
                     status: false
                 },
+                music_id: 0,
                 toplist: api.toplist,
                 toplist_list_id: [],
                 toplist_load_ok: false
@@ -50,10 +51,12 @@
         methods: {
             show_toplist: function(idx) {
                 console.log(this.$router)
+                console.log("进入路由")
                 this.get_in_router.status = true
                 this.$router.push({
                     name: 'toplistpage',
                     params: {
+                        id: idx,
                         toplist: this.toplist[idx],
                         get_in_router: this.get_in_router
                     }
@@ -98,6 +101,13 @@
                     that.get_toplist_r(cnt)
                         //console.log(id)
                 })
+            }
+        },
+        watch: {
+            music_id: function(val, Oldval) {
+                console.log("toplist watch" + val + " " + Oldval)
+                console.log(this.$root)
+                this.$emit('playMusic', this.music_id)
             }
         },
         created: function() {

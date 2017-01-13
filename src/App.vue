@@ -1,26 +1,25 @@
 <template>
     <div id="app">
-        <mt-header fixed title="云音乐播放器"></mt-header>
+        <mt-header fixed title="网易云音乐"></mt-header>
         <mt-tab-container class="tabbar-container" v-model="tab_selected">
             <mt-tab-container-item id="歌曲榜单">
-                <top-list></top-list>
-            </mt-tab-container-item>
-
-            <mt-tab-container-item id="热门歌手">
-                <mt-cell v-for="n in 5" :title="'订单 ' + n" />
+                <top-list @playMusic="playMusicNow"></top-list>
             </mt-tab-container-item>
 
             <mt-tab-container-item id="搜索">
                 <mt-search v-show="play_panel" v-model="search_song" cancel-text="取消" placeholder="搜索" class="search">
                     <mt-loadmore :bottom-method="loadBottom" ref="loadmore">
                         <transition-group name="lm-fade">
-                            <div v-for="item in search_result" class="loadmore-list" @click="chooseMusic(item)" :key="item.name">
+                            <div v-for="item in search_result" class="loadmore-list" @click="chooseMusic(item)" :key="item.id">
                                 <div class="loadmore-listitem-l" :class="{playleft: item.music_play}">{{item.name}}</div>
                                 <div class="loadmore-listitem-r">{{item.artists[0].name}}</div>
                             </div>
                         </transition-group>
                     </mt-loadmore>
                 </mt-search>
+            </mt-tab-container-item>
+
+            <mt-tab-container-item id="播放">
                 <play-bar :bar_music_id="music_id"></play-bar>
             </mt-tab-container-item>
 
@@ -35,13 +34,13 @@
             <img slot="icon" src="./assets/歌曲榜单.png">
             歌曲榜单
         </mt-tab-item>
-        <mt-tab-item id="热门歌手">
-            <img slot="icon" src="./assets/热门歌手.png">
-            热门歌手
-        </mt-tab-item>
         <mt-tab-item id="搜索">
             <img slot="icon" src="./assets/搜索.png">
             搜索
+        </mt-tab-item>
+        <mt-tab-item id="播放">
+            <img slot="icon" src="./assets/播放.png">
+            播放
         </mt-tab-item>
         <mt-tab-item id="我的">
             <img slot="icon" src="./assets/我的.png">
@@ -106,6 +105,10 @@
 
                 /* 改变当前歌曲的样式，表示正在播放 */
                 item.music_play = true
+            },
+            playMusicNow(id) {
+                //console.log("xiaxiaowen " + id)
+                this.music_id = id
             }
         },
         watch: {
@@ -126,7 +129,10 @@
                 })
                 console.log(this.search_result)
             },
-            tab_selected: function(val, oldVal) {}
+            music_id: function(val, oldVal) {
+                console.log("app watch")
+                this.tab_selected = "播放"
+            }
         },
         components: {
             PlayBar,
@@ -146,6 +152,10 @@
     .tabbar-container {
         padding-top: 40px;
         padding-bottom: 55px;
+    }
+    
+    .mint-search {
+        height: 85vh !important;
     }
     
     .mint-search-list {
@@ -190,7 +200,8 @@
         border-top: solid 1px #dddddd;
         border-bottom: solid 1px #dddddd;
     }
-    /*.lm-fade-enter-active {
+    
+    .lm-fade-enter-active {
         transition: all .3s ease;
     }
     
@@ -202,7 +213,7 @@
     .lm-fade-leave {
         transform: translateX(10px);
         opacity: 0;
-    }*/
+    }
     
     .routerfade-enter-active {
         transition: all .3s ease;
