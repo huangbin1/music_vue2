@@ -153,7 +153,15 @@
         padding-top: 40px;
         padding-bottom: 55px;
     }
-    
+    .mint-header {
+        background-color: rgba(38, 162, 255, 0.5) !important;
+    }
+    .mint-tabbar {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+    }
+    .mint-tabbar > .mint-tab-item.is-selected {
+        background-color: rgba(234, 234, 234, 0.6) !important;
+    }
     .mint-search {
         height: 85vh !important;
     }
